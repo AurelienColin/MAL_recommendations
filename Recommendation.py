@@ -1,18 +1,15 @@
 import time
 from functools import lru_cache
-import sys
+import fire
 
 from Rignak_MAL_Recommendations.plot import plot
 from Rignak_Misc.TWRV import ThreadWithReturnValue as TWRV
 from Rignak_Request.request import request_with_retry
 
-"""
-Use: 
->>> python Recommendation.py {username}
-"""
-
-WORLD_ORIGIN = "12549", "Dakara_Boku_wa_H_ga_Dekinai"
+WORLD_ORIGIN_INDEX = "12549"
+WORLD_ORIGIN_TITLE = "Dakara_Boku_wa_H_ga_Dekinai"
 MAX_RECOMMENDATION_BY_ANIME = 5
+
 
 @lru_cache(maxsize=2 ** 20)
 def process_double_id(id1, id2):
@@ -46,11 +43,17 @@ def process_anime(url):
     return recommendations, new_urls, id2title
 
 
-def main(username):
-    i, title = WORLD_ORIGIN
+def main(username, world_origin_index=WORLD_ORIGIN_INDEX, world_origin_title=WORLD_ORIGIN_TITLE):
+    """
+    Create a graph based on the recommendations from MAL and the anime watched by the user
 
-    id2title = {i: title}
-    urls_to_request = [f'https://myanimelist.net/anime/{i}/{title}/userrecs']
+    :param username: name of the user, used for the coloration of the boxes
+    :param world_origin_index: anime index of the origin of the graph
+    :param world_origin_title: anime title of the origin of the graph
+    :return:
+    """
+    id2title = {world_origin_index: world_origin_title}
+    urls_to_request = [f'https://myanimelist.net/anime/{world_origin_index}/{world_origin_title}/userrecs']
     urls_seen = []
     recommendations = {}
 
@@ -73,5 +76,4 @@ def main(username):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        main(sys.argv[1])
+    fire.Fire(main)
