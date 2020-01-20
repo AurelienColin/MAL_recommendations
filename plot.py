@@ -1,7 +1,8 @@
-from subprocess import check_call
+import subprocess
 from graphviz import Digraph
 import numpy as np
 import os
+import unicodedata
 
 from Rignak_Misc.path import get_local_file
 from Rignak_MAL_database.database import load
@@ -33,6 +34,7 @@ def plot_nodes(graph, user_anime, id2title, anime_widths):
 
         if len(title) > 20:
             title = title[:15] + '\n' + title[15:min(len(title), 30)]
+        title = unicodedata.normalize('NFKD', title).encode('ascii', 'ignore').decode('ascii')
 
         graph.node(str(anime_id), title, _attributes={'fontsize': str(int(anime_widths[anime_id] ** FONT_POWER + 5)),
                                                       'penwidth': str(
@@ -61,8 +63,8 @@ def plot(recommendations, id2title, username):
     plot_edges(graph, recommendations, anime_widths)
 
     graph.render(DOT_FILENAME)
-    check_call(['sfdp', '-Tpng', DOT_FILENAME, '-o', PNG_FILENAME.replace('¤', str(len(anime_widths))),
-                '-Goverlap=prism ',
-                "-Gmodel=subset",
-                "-Gsplines=true"])
+    subprocess.check_call(['sfdp', '-Tpng', DOT_FILENAME, '-o', PNG_FILENAME.replace('¤', str(len(anime_widths))),
+                           '-Goverlap=prism ',
+                           "-Gmodel=subset",
+                           "-Gsplines=true"])
     os.remove(DOT_FILENAME + '.pdf')
