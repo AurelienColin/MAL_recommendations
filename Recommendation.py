@@ -1,6 +1,7 @@
 import time
 from functools import lru_cache
 import fire
+import random
 
 from Rignak_MAL_Recommendations.plot import plot
 from Rignak_Misc.TWRV import ThreadWithReturnValue as TWRV
@@ -59,7 +60,8 @@ def main(username, world_origin_index=WORLD_ORIGIN_INDEX, world_origin_title=WOR
 
     k = 0
     while len(urls_to_request) > 0:
-        url = urls_to_request.pop(0)
+        url = urls_to_request.pop(random.randint(0, len(urls_to_request)-1))
+        urls_seen.append(url)
 
         print(f"{k}|{len(urls_to_request)} | {url.split('/')[-2]}")
         try:
